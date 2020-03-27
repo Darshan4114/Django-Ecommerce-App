@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <main class="order-main">
+        <div class="container order-summary">
+            <div class="table-responsive text-nowrap">
+                <h2 class="mt-5" >Order Summary </h2>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Total Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for order_item in order.items.all %}
+                    <tr>
+                      <th scope="row">{{forloop.counter}}</th>
+                      <td>{{order_item.item.name}}</td>
+                      {% if order_item.item.disc_price %}
+                      <td> <span style="text-decoration: line-through;">${{order_item.item.price}}</span> ${{order_item.item.disc_price}}</td>
+                      <td> <a href="{{order_item.item.get_remove_single_item_url}}"><i class="fas fa-minus m-2"></i></a>{{order_item.qty}}<a href="{{order_item.item.get_add_to_cart_url}}"><i class="m-2 fas fa-plus"></i></a></td>
+                      <td>${{order_item.get_total_discount_item_price}}</td>
+                      {% else %}
+                      <td>${{order_item.item.price}}</td>
+                      <td> <a href="{{order_item.item.get_remove_single_item_url}}"><i class="fas fa-minus m-2"></i></a>{{order_item.qty}}<a href="{{order_item.item.get_add_to_cart_url}}"><i class="m-2 fas fa-plus"></i></a></td>
+                      <td>${{order_item.get_total_item_price}}</td>
+                      {% endif %}
+                      <td><a href="{{order_item.item.get_remove_from_cart_url}}"><i class="fas fa-trash"></i></a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td><h3> Your Cart is empty </h3></td>
+                    </tr>
+                    <tr>
+                      <td colspan="4">
+                        <a class="btn btn-success m-2 float-right" href="/">Continue Shopping</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    {% if order.get_total %}
+                    <tr>
+                      <td colspan="4"><h3> Grand Total:</h3></td>
+                      <td><h3> ${{order.get_total}}</h3></td>
+                    </tr>
+                    <tr>
+                      <td colspan="4">
+                        <a class="btn btn-warning m-2 float-right" href="/checkout">Proceed to Checkout</a>
+                        <a class="btn btn-success m-2 float-right" href="/">Continue Shopping</a>
+                      </td>
+                    </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+                
+              
+              </div>
+        </div>
+    </main>    
+</body>
+</html>
+{% endblock %}

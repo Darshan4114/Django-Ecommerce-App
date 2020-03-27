@@ -24,15 +24,31 @@ class Item(models.Model):
 
     def get_remove_from_cart_url(self):
         return reverse ("core:remove_from_cart", args=[str(self.id)])
+    
+    def get_remove_single_item_url(self):
+        return reverse ("core:remove_single_item", args=[str(self.id)])
+    
 
 class OrderItem(models.Model):
     user = models.ForeignKey(user_model,on_delete = models.CASCADE)
     item = models.ForeignKey(Item, on_delete = models.CASCADE)
-    qty = models.IntegerField(default=0)
+    qty = models.IntegerField(default=1)
     ordered = models.BooleanField(default=False)
 
     def __str__(self):
         return self.item.name
+
+    def get_total_item_price(self):
+        return (self.item.price * self.qty)
+    
+    def get_total_discount_item_price(self):
+        return (self.item.disc_price * self.qty)
+
+    def get_final_price(self):
+        if self.item.disc_price:
+            return (self.item.disc_price * self.qty)
+        else:
+            return (self.item.price * self.qty)
 
 class Order(models.Model):
     user = models.ForeignKey(user_model,on_delete = models.CASCADE)
@@ -44,4 +60,8 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
-    
+    def get_total(self):
+        total = 0
+        for item in self.items.all():
+            total += item.get_final_price()
+        return total
