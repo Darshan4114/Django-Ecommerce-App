@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .models import Item, OrderItem, Order
+from .forms import CheckoutForm
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
 
@@ -122,4 +123,13 @@ def remove_single_item(request, id):
 
 class checkout(LoginRequiredMixin ,View):
     def get(self, *args, **kwargs):
-        return render(self.request, 'checkout.html')
+        form = CheckoutForm()
+        context={
+            'form': form,
+        }
+        return render(self.request, 'checkout.html', context)
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        if form.is_valid():
+            print('form is valid')
+            return redirect('core:checkout')
