@@ -23,6 +23,8 @@
 
 <body class="grey lighten-3">
 
+  
+
   <!--Main layout-->
   <main class="mt-5 pt-4">
     <div class="container wow fadeIn">
@@ -39,15 +41,15 @@
           <!--Card-->
           <div class="card">
 
-            <!-- <form class="card-body" action="">
+            <!-- <form class="card-body" method="POST" action="">
               {% csrf_token %}
               {{form|crispy}}
               <button class="btn btn-success" type="submit" >Checkout</button>
-            </form> -->
+            </form>  -->
             <!--Card content-->
-            <form class="card-body">
+            <form class="card-body" method="POST">
 
-              
+              {% csrf_token %}
               
               <!--address-->
               <div class="md-form mb-5">
@@ -84,26 +86,26 @@
 
               <div class="custom-control custom-checkbox">
                 
-                <input type="checkbox" {% if form.same_add.value %}checked{%endif%} class="custom-control-input" id="same-add">
-                <label class="custom-control-label" for="same-add">Shipping address is the same as my billing address</label>
+                <input type="checkbox" {% if form.same_add.value %}checked{%endif%} class="custom-control-input" name="same_add" id="same_add">
+                <label class="custom-control-label" for="same_add">Shipping address is the same as my billing address</label>
               </div>
               <div class="custom-control custom-checkbox">
                 
-                <input type="checkbox" {% if form.save_info.value %}checked{%endif%} class="custom-control-input" id="save-info">
-                <label class="custom-control-label" for="save-info">Save this information for next time</label>
+                <input type="checkbox" {% if form.save_info.value %}checked{%endif%} class="custom-control-input" name="save_info" id="save_info">
+                <label class="custom-control-label" for="save_info">Save this information for next time</label>
               </div>
 
               <hr>
 
-              <div class="d-block my-3">
+              <div class="d-block my-3" id="id_payment_option" >
                 <!-- <div class="custom-control custom-radio">
                   <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
                   <label class="custom-control-label" for="credit">Credit card</label>
                 </div> -->
                 {% for value, name in form.fields.payment_option.choices %}
                 <div class="custom-control custom-radio">
-                  <input id="{{value}}" name="paymentMethod" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="{{value}}">{{name}}</label>
+                  <input id="id_payment_option_{{forloop.counter}}" value="{{value}}" name="payment_option" type="radio" class="custom-control-input" required>
+                  <label class="custom-control-label" for="id_payment_option_{{forloop.counter}}">{{name}}</label>
                 </div>
                 {% endfor %}
               </div>

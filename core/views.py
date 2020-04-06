@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from .models import Item, OrderItem, Order
+from .models import Item, OrderItem, Order, BillingAdd
 from .forms import CheckoutForm
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
@@ -130,6 +130,48 @@ class checkout(LoginRequiredMixin ,View):
         return render(self.request, 'checkout.html', context)
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
-        if form.is_valid():
-            print('form is valid')
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                print('form is valid')
+                add1 = form.cleaned_data['add1']
+                add2 = form.cleaned_data['add2']
+                country = form.cleaned_data['country']
+                zipcode = form.cleaned_data['zipcode']
+                # TODO : ADD SAVE_INFO AND SAME_ADDRESS FUNCTIONALITY
+                # same_add = form.cleaned_data['same_add']
+                # save_info = form.cleaned_data['save_info']
+                payment_option = form.cleaned_data['payment_option']
+                print('CLEANED_DATA: ',form.cleaned_data)
+                
+                # Saving billing address
+                billing_add = BillingAdd(user = self.request.user, add1 = add1, add2 = add2, country = country, zipcode = zipcode)
+                billing_add.save()
+                
+                # Attaching billing address to order
+                order.billing_add = billing_add
+                order.save()
+                
+
+                return redirect('core:checkout')
+                messages.info(self.request, 'Checkout Problem')
+
+            print('Checkout Problem')
             return redirect('core:checkout')
+            
+        except ObjectDoesNotExist:
+            messages.error('You do not have an active order')
+            return redirect('core:order:summary')
+
+        print(self.request.POST)
+
+class payment(View):
+    
+    def get(self, *args, **kwargs):
+        context={
+
+        }
+        return render(self.request, 'payment.html' , context)
+
+    def post(self, *args, **kwargs):
+        pass

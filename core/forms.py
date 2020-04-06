@@ -27,5 +27,7 @@ class CheckoutForm(forms.Form):
     save_info = forms.BooleanField(widget=forms.CheckboxInput(attrs={
         'id':'save_info'
     }), required=False)
-    payment_option = forms.ChoiceField(widget=forms.RadioSelect(),
+    payment_option = forms.ChoiceField(widget=forms.RadioSelect(attrs={
+        'name': 'payment_option',
+    }),
         choices= PAYMENT_CHOICES)
